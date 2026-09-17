@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>렌탈ON 장기렌터카 계산기</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Malgun Gothic",sans-serif;background:#f5f7fa;color:#172033}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+.header{text-align:center;padding:18px 0 24px}
+.logo{font-size:30px;font-weight:900;letter-spacing:-1.5px}.logo span{color:#1677ff}
+.subtitle{margin:8px 0 0;color:#667085;font-size:14px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 5px 20px rgba(16,24,40,.05)}
+h2{font-size:18px;margin:0 0 18px;letter-spacing:-.5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+input,select{width:100%;height:48px;border:1px solid #d8dee8;border-radius:10px;padding:0 13px;font-size:16px;background:#fff;color:#172033;outline:none}
+input:focus,select:focus{border-color:#1677ff;box-shadow:0 0 0 3px rgba(22,119,255,.1)}
+.unit{position:relative}.unit input{padding-right:42px}.unit em{position:absolute;right:13px;top:14px;font-style:normal;color:#667085;font-size:14px}
+.result{background:#111827;color:#fff;border-radius:16px;padding:22px}
+.result .label{font-size:13px;color:#cbd5e1}.price{font-size:34px;font-weight:900;margin:8px 0 18px;letter-spacing:-1px}
+.rows{border-top:1px solid #374151}.row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #374151;font-size:14px}.row:last-child{border-bottom:0}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+button{height:48px;border:0;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer}
+.primary{background:#1677ff;color:#fff}.secondary{background:#eef2f7;color:#344054}
+.notice{font-size:12px;color:#667085;line-height:1.65;margin-top:14px}
+.error{color:#d92d20;font-size:12px;margin-top:6px;min-height:16px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.wrap{padding:15px 12px 40px}.price{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="header">
+    <div class="logo">렌탈<span>ON</span></div>
+    <p class="subtitle">장기렌터카 예상 월 렌탈료 계산기</p>
+  </header>
+
+  <section class="card">
+    <h2>차량 및 계약 조건</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="carPrice">차량가격</label>
+        <div class="unit"><input id="carPrice" type="number" min="0" step="10000" value="40000000"><em>원</em></div>
+      </div>
+      <div class="field">
+        <label for="term">계약기간</label>
+        <select id="term"><option value="36">36개월</option><option value="48">48개월</option><option value="60" selected>60개월</option></select>
+      </div>
+      <div class="field">
+        <label for="deposit">보증금</label>
+        <div class="unit"><input id="deposit" type="number" min="0" max="100" step="1" value="0"><em>%</em></div>
+      </div>
+      <div class="field">
+        <label for="prepay">선납금</label>
+        <div class="unit"><input id="prepay" type="number" min="0" max="100" step="1" value="0"><em>%</em></div>
+      </div>
+      <div class="field">
+        <label for="residual">예상 잔존가치</label>
+        <div class="unit"><input id="residual" type="number" min="0" max="90" step="1" value="45"><em>%</em></div>
+      </div>
+      <div class="field">
+        <label for="rate">예상 금융률</label>
+        <div class="unit"><input id="rate" type="number" min="0" max="30" step="0.1" value="6.0"><em>%</em></div>
+      </div>
+      <div class="field">
+        <label for="monthlyCost">보험·세금 등 월 추정비용</label>
+        <div class="unit"><input id="monthlyCost" type="number" min="0" step="1000" value="70000"><em>원</em></div>
+      </div>
+      <div class="field">
+        <label for="discount">차량 할인액</label>
+        <div class="unit"><input id="discount" type="number" min="0" step="10000" value="0"><em>원</em></div>
+      </div>
+    </div>
+    <div id="error" class="error"></div>
+    <div class="buttons">
+      <button class="primary" id="calculate">월 렌탈료 계산</button>
+      <button class="secondary" id="reset">초기화</button>
+    </div>
+  </section>
+
+  <section class="result" aria-live="polite">
+    <div class="label">예상 월 렌탈료</div>
+    <div class="price" id="monthly">0원</div>
+    <div class="rows">
+      <div class="row"><span>할인 적용 차량가격</span><strong id="netPrice">0원</strong></div>
+      <div class="row"><span>보증금</span><strong id="depositWon">0원</strong></div>
+      <div class="row"><span>선납금</span><strong id="prepayWon">0원</strong></div>
+      <div class="row"><span>계약기간</span><strong id="termText">60개월</strong></div>
+      <div class="row"><span>예상 총 납입액</span><strong id="total">0원</strong></div>
+    </div>
+    <p class="notice">※ 본 계산기는 상담을 위한 예상 계산기입니다. 실제 렌탈료는 렌터카 회사별 프로모션, 차량 트림·옵션, 보험조건, 신용조건, 잔존가치 및 금융조건 등에 따라 달라질 수 있습니다.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const won = n => Math.round(n).toLocaleString('ko-KR') + '원';
+  const num = id => {
+    const n = Number($(id).value);
+    return Number.isFinite(n) ? Math.max(0,n) : 0;
+  };
+
+  function calculate(){
+    const price0=num('carPrice');
+    const term=num('term');
+    const depositPct=Math.min(100,num('deposit'));
+    const prepayPct=Math.min(100,num('prepay'));
+    const residualPct=Math.min(90,num('residual'));
+    const annualRate=Math.min(30,num('rate'))/100;
+    const monthlyCost=num('monthlyCost');
+    const discount=Math.min(price0,num('discount'));
+    const error=$('error');
+
+    if(price0<=0){error.textContent='차량가격을 입력해주세요.';return;}
+    if(depositPct+prepayPct>100){error.textContent='보증금과 선납금 합계는 100%를 초과할 수 없습니다.';return;}
+    error.textContent='';
+
+    const price=Math.max(0,price0-discount);
+    const deposit=price*depositPct/100;
+    const prepay=price*prepayPct/100;
+    const residual=price*residualPct/100;
+    const financed=Math.max(0,price-prepay);
+
+    const r=annualRate/12;
+    let capitalPayment;
+    if(r===0){
+      capitalPayment=Math.max(0,financed-residual)/term;
+    }else{
+      const pvResidual=residual/Math.pow(1+r,term);
+      capitalPayment=Math.max(0,(financed-pvResidual)*r/(1-Math.pow(1+r,-term)));
+    }
+
+    // 보증금은 반환되는 금액이므로 월 납입 원가에서 차감하지 않음.
+    const monthly=Math.max(0,capitalPayment+monthlyCost);
+    const total=monthly*term+prepay;
+
+    $('monthly').textContent=won(monthly);
+    $('netPrice').textContent=won(price);
+    $('depositWon').textContent=won(deposit);
+    $('prepayWon').textContent=won(prepay);
+    $('termText').textContent=term+'개월';
+    $('total').textContent=won(total);
+  }
+
+  function reset(){
+    $('carPrice').value=40000000;
+    $('term').value=60;
+    $('deposit').value=0;
+    $('prepay').value=0;
+    $('residual').value=45;
+    $('rate').value=6;
+    $('monthlyCost').value=70000;
+    $('discount').value=0;
+    calculate();
+  }
+
+  $('calculate').addEventListener('click',calculate);
+  $('reset').addEventListener('click',reset);
+  ['carPrice','term','deposit','prepay','residual','rate','monthlyCost','discount'].forEach(id=>{
+    $(id).addEventListener('input',calculate);
+    $(id).addEventListener('change',calculate);
+  });
+  calculate();
+})();
+</script>
+</body>
+</html>
