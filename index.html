@@ -1,77 +1,65 @@
-<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>렌탈ON V7 | 차량 DB 대량수집·검수</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>렌탈ON | 장기렌터카 간편견적</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#172230;font-family:Arial,'Noto Sans KR',sans-serif}:root{--b:#1769e0;--navy:#082642;--line:#dfe6ef;--muted:#667085;--ok:#16834b;--warn:#b56a00;--bad:#c62828}
-header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.head,.wrap{max-width:1250px;margin:auto}.head{padding:14px;display:flex;justify-content:space-between;align-items:center}.logo{font-size:28px;font-weight:900;letter-spacing:-2px}.logo b{color:var(--b)}.tag{background:#edf5ff;color:var(--b);border-radius:20px;padding:8px 12px;font-size:12px;font-weight:900}
-.wrap{padding:20px 14px}.hero{background:linear-gradient(120deg,#071e36,#145487);color:#fff;border-radius:22px;padding:27px;margin-bottom:18px}.hero h1{margin:0 0 8px;font-size:28px}.hero p{margin:0;color:#d9e7f5;line-height:1.65}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:19px;margin-bottom:17px}.title{font-size:19px;font-weight:900;margin-bottom:12px}.sub{font-size:12px;color:var(--muted);line-height:1.6}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.stat{background:#f7faff;border:1px solid #e3ebf5;border-radius:13px;padding:11px;font-size:11px}.stat b{display:block;color:var(--b);font-size:20px;margin-top:4px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn{border:1px solid #ccd7e4;background:#fff;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}.primary{background:var(--b);border-color:var(--b);color:#fff}.danger{color:var(--bad)}.search{padding:11px;border:1px solid #d5dee9;border-radius:10px;min-width:260px}.tabs{display:flex;gap:7px;overflow:auto;margin:14px 0}.tab.active{background:#edf5ff;color:var(--b);border-color:#9fc4fa}.table{overflow:auto}table{border-collapse:collapse;width:100%;min-width:1180px}th,td{padding:9px;border-bottom:1px solid #edf0f4;text-align:left;font-size:11px}th{background:#f7f9fc;white-space:nowrap}.badge{display:inline-block;border-radius:15px;padding:4px 7px;font-weight:900;font-size:10px}.ok{background:#e9f8f0;color:var(--ok)}.warn{background:#fff4df;color:var(--warn)}.bad{background:#ffebeb;color:var(--bad)}.modal{display:none;position:fixed;inset:0;background:#0006;z-index:20;padding:18px}.modal.open{display:flex;justify-content:center;align-items:center}.box{background:#fff;border-radius:18px;width:min(850px,96vw);max-height:92vh;overflow:auto;padding:20px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.field label{display:block;font-size:11px;font-weight:900;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid #d5dee9;border-radius:9px}.wide{grid-column:1/-1}.preview{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:10px}.notice{background:#f8fafc;border-radius:10px;padding:11px;font-size:11px;color:var(--muted);line-height:1.65}.check{font-size:11px;font-weight:800}
-@media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.search{width:100%;min-width:0}.hero h1{font-size:23px}}
-</style></head>
-<body>
-<header><div class="head"><div class="logo">렌탈<b>ON</b></div><div class="tag">차량 DB 대량수집·검수 V7</div></div></header>
-<main class="wrap">
-<section class="hero"><h1>렌탈ON 차량 DB 대량수집센터</h1><p>엑셀/CSV 데이터를 한꺼번에 가져오고, 중복·필수값·가격 오류를 자동으로 1차 검수합니다.<br>검수 완료 데이터만 차량 DB에 반영하는 구조입니다.</p></section>
-
-<section class="card"><div class="title">DB 현황</div><div class="stats">
-<div class="stat">전체<b id="sAll">0</b></div><div class="stat">검수완료<b id="sOK">0</b></div><div class="stat">검수대기<b id="sWait">0</b></div><div class="stat">오류<b id="sBad">0</b></div><div class="stat">중복의심<b id="sDup">0</b></div><div class="stat">제조사<b id="sBrand">0</b></div>
-</div></section>
-
-<section class="card">
-<div class="title">① 대량 데이터 가져오기</div>
-<div class="sub">권장 CSV 컬럼: 제조사, 모델명, 시리즈, 차체, 연료, 연식, 트림, 차량가, 공식출처URL, 가격기준일, 메모</div>
-<div class="toolbar" style="margin-top:12px">
-<label class="btn primary">CSV 파일 선택<input id="file" type="file" accept=".csv,.txt" hidden onchange="readCSV(event)"></label>
-<button class="btn" onclick="pasteOpen()">여러 차량 붙여넣기</button>
-<button class="btn" onclick="downloadTemplate()">CSV 양식 다운로드</button>
-<button class="btn" onclick="exportDB()">현재 DB CSV</button>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#162033;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}.top{height:66px;background:#fff;border-bottom:1px solid #e7ebf0;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:10}.brand{font-weight:950;font-size:25px;letter-spacing:-1.6px}.brand b{color:#1674e8}.admin{font-size:12px;color:#58708c;background:#eef5fc;padding:8px 11px;border-radius:18px}
+.wrap{max-width:1080px;margin:auto;padding:20px 14px 55px}.hero{border-radius:24px;padding:29px;color:#fff;background:linear-gradient(125deg,#071f3b,#1774b5);margin-bottom:16px}.hero h1{margin:0 0 7px;font-size:29px}.hero p{margin:0;color:#dcefff;line-height:1.55}.steps{display:flex;gap:7px;overflow:auto;margin:0 0 16px}.step{white-space:nowrap;padding:8px 11px;border-radius:20px;background:#e9eef5;color:#6b7787;font-size:12px;font-weight:800}.step.on{background:#1674e8;color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:#fff;border:1px solid #e2e7ef;border-radius:17px;padding:18px}.card h2{font-size:18px;margin:0 0 13px}.options{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.choice{border:1px solid #dbe1e9;border-radius:11px;background:#fff;padding:12px;text-align:left;cursor:pointer}.choice.active{border:2px solid #1674e8;background:#f3f8ff}.choice b{display:block}.choice small{color:#748196}.select,.input{width:100%;padding:12px;border:1px solid #d7dde6;border-radius:10px;background:#fff;font:inherit}.result{position:sticky;top:80px}.estimate{background:#f4f9ff;border:1px solid #d9eaff;border-radius:15px;padding:18px}.monthly{font-size:35px;font-weight:950;color:#126bd4}.line{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #e8edf4}.line:last-child{border:0}.primary{width:100%;padding:14px;border:0;border-radius:12px;background:#1674e8;color:#fff;font-size:16px;font-weight:900;cursor:pointer;margin-top:12px}.secondary{width:100%;padding:12px;border:0;border-radius:11px;background:#eef4fb;color:#185b9e;font-weight:800;margin-top:8px;cursor:pointer}.note{font-size:12px;line-height:1.55;color:#607086;margin-top:11px}.modal{display:none;position:fixed;inset:0;background:#0008;z-index:20;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.modalbox{background:#fff;border-radius:18px;padding:20px;width:min(470px,100%)}.modalbox input,.modalbox textarea{width:100%;padding:11px;border:1px solid #d7dde6;border-radius:10px;margin:6px 0;font:inherit}.modalbox textarea{min-height:80px}.close{float:right;border:0;background:#eef1f5;border-radius:9px;padding:7px}.success{padding:15px;background:#eaf8f0;color:#16784b;border-radius:12px;font-weight:800}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.result{position:static}.hero{padding:23px}.hero h1{font-size:25px}.top{padding:0 13px}.brand{font-size:21px}}
+</style></head><body>
+<header class="top"><div class="brand">렌탈<b>ON</b></div><div class="admin">장기렌터카 간편견적</div></header>
+<div class="wrap">
+<section class="hero"><h1>내 차, 월 얼마일까?</h1><p>차량과 계약조건을 선택하면 렌탈ON DB에 등록된 요율을 기준으로 예상 견적을 확인할 수 있습니다.</p></section>
+<div class="steps"><div class="step on">01 차량</div><div class="step">02 트림</div><div class="step">03 계약조건</div><div class="step">04 견적</div></div>
+<div class="grid">
+<div>
+<section class="card"><h2>01. 제조사</h2><div id="brands" class="options"></div></section>
+<section class="card"><h2>02. 차량</h2><div id="models" class="options"></div></section>
+<section class="card"><h2>03. 트림</h2><div id="trims" class="options"></div></section>
+<section class="card"><h2>04. 계약조건</h2>
+<div style="display:grid;gap:10px"><label>계약기간<select id="term" class="select"><option value="36">36개월</option><option value="48" selected>48개월</option><option value="60">60개월</option></select></label>
+<label>연간 주행거리<select id="mileage" class="select"><option value="10000">1만 km</option><option value="20000" selected>2만 km</option><option value="30000">3만 km</option><option value="40000">4만 km</option></select></label>
+<label>초기납입<select id="initial" class="select"><option value="none">무보증</option><option value="deposit">보증금</option><option value="prepay">선납금</option></select></label>
+<label>초기납입률 <input id="rate" class="input" type="number" value="0" min="0" max="100" step="1"></label>
+<label>옵션 추가금 <input id="option" class="input" type="number" value="0" min="0" step="10000"></label></div>
+</section>
 </div>
-<div class="notice" style="margin-top:12px">💡 엑셀에서 행을 복사해 붙여넣어도 됩니다. 첫 줄은 컬럼명으로 인식합니다. CSV 가져오기는 현재 브라우저의 렌탈ON V7 DB에 추가되며, 서버에 자동 업로드되는 방식은 아닙니다.</div>
-</section>
-
-<section class="card">
-<div class="toolbar"><div><div class="title" style="margin:0">② 검수 대기 데이터</div><div class="sub">오류/중복을 확인한 뒤 선택 항목을 DB에 반영하세요.</div></div><input id="q" class="search" placeholder="제조사·차량·트림 검색" oninput="render()"></div>
-<div class="toolbar" style="margin-top:12px"><button class="btn primary" onclick="approveSelected()">선택 DB 반영</button><button class="btn" onclick="approveAll()">검수완료 항목 전체 반영</button><button class="btn" onclick="clearPending()">대기 데이터 삭제</button></div>
-<div class="table" style="margin-top:12px"><table><thead><tr><th><input type="checkbox" onchange="toggleAll(this)"></th><th>상태</th><th>제조사</th><th>모델</th><th>시리즈</th><th>차체</th><th>연료</th><th>연식</th><th>트림</th><th>차량가</th><th>검수 사유</th><th>관리</th></tr></thead><tbody id="rows"></tbody></table></div>
-</section>
-
-<section class="card"><div class="title">③ 등록된 차량 DB</div><div class="toolbar"><button class="btn" onclick="backup()">JSON 백업</button><label class="btn">JSON 복원<input type="file" accept=".json" hidden onchange="restore(event)"></label><button class="btn danger" onclick="clearDB()">전체 DB 삭제</button></div>
-<div class="table" style="margin-top:12px"><table><thead><tr><th>ID</th><th>제조사</th><th>모델</th><th>시리즈</th><th>차체</th><th>연료</th><th>연식</th><th>트림</th><th>차량가</th><th>출처</th><th>기준일</th><th>관리</th></tr></thead><tbody id="dbrows"></tbody></table></div></section>
-
-<section class="card"><div class="title">V7 → 다음 단계</div><div class="notice"><b>V7</b> 대량수집·검수 → <b>V8</b> 트림/옵션 구조화 → <b>V9</b> 가격 변경 이력 → <b>V10</b> 렌탈사 요율 DB → <b>V11</b> 견적엔진 → <b>V12</b> 고객용 렌탈ON 계산기</div></section>
-</main>
-
-<div id="modal" class="modal"><div class="box"><button class="btn" style="float:right" onclick="closeModal()">닫기</button><div class="title">차량 데이터 붙여넣기</div><p class="sub">엑셀에서 여러 행을 그대로 복사해서 아래에 붙여넣으세요. 첫 줄 컬럼명이 없어도 순서대로 읽을 수 있습니다.</p><textarea id="paste" style="width:100%;height:220px;padding:12px;border:1px solid #d5dee9;border-radius:10px" placeholder="제조사	모델명	시리즈	차체	연료	연식	트림	차량가	공식출처URL	가격기준일	메모"></textarea><div class="toolbar" style="margin-top:10px"><button class="btn primary" onclick="parsePaste()">검수 시작</button><button class="btn" onclick="closeModal()">취소</button></div></div></div>
-
+<div><section class="card result"><h2>렌탈ON 예상 견적</h2><div id="result" class="estimate"><div class="monthly">견적 준비중</div><div class="note">차량과 조건을 선택하면 결과가 표시됩니다.</div></div><button class="primary" onclick="openModal()">무료 상담 신청</button><button class="secondary" onclick="resetAll()">처음부터 다시</button><div class="note">실제 월 렌탈료는 렌탈사 심사, 보험, 정비, 프로모션, 계약 시점 등에 따라 달라질 수 있습니다. 요율 DB에 정확히 일치하는 자료가 없는 경우 임의의 금액을 생성하지 않습니다.</div></section></div>
+</div></div>
+<div id="modal" class="modal"><div class="modalbox"><button class="close" onclick="closeModal()">닫기</button><h2>렌탈ON 무료 상담</h2><input id="name" placeholder="이름"><input id="phone" placeholder="연락처"><textarea id="memo" placeholder="원하는 차량/상담 내용을 적어주세요"></textarea><button class="primary" onclick="submitLead()">상담 신청하기</button><div id="leadResult"></div></div></div>
 <script>
-const DB='rentalon_v7_db',PEND='rentalon_v7_pending';
-let db=JSON.parse(localStorage.getItem(DB)||'[]'),pending=JSON.parse(localStorage.getItem(PEND)||'[]'),filter='전체';
-const $=id=>document.getElementById(id);
-const money=n=>Number(n||0).toLocaleString('ko-KR')+'원';
-function persist(){localStorage.setItem(DB,JSON.stringify(db));localStorage.setItem(PEND,JSON.stringify(pending));render();stats()}
-function stats(){$('sAll').textContent=pending.length+db.length;$('sOK').textContent=pending.filter(x=>x.status==='검수완료').length;$('sWait').textContent=pending.filter(x=>x.status==='검수대기').length;$('sBad').textContent=pending.filter(x=>x.status==='오류').length;$('sDup').textContent=pending.filter(x=>x.status==='중복의심').length;$('sBrand').textContent=new Set(db.map(x=>x.brand)).size}
-function validate(x){let e=[];if(!x.brand)e.push('제조사 없음');if(!x.model)e.push('모델명 없음');if(!x.trim)e.push('트림 없음');if(!x.price||isNaN(x.price)||x.price<=0)e.push('차량가 오류');if(x.year&&(!/^20\\d{2}$/.test(String(x.year))))e.push('연식 확인');let dup=db.some(a=>a.brand===x.brand&&a.model===x.model&&a.trim===x.trim&&Number(a.price)===Number(x.price));let pdup=pending.some(a=>a.brand===x.brand&&a.model===x.model&&a.trim===x.trim&&Number(a.price)===Number(x.price));if(dup||pdup)e.push('동일 데이터 존재');return {status:e.length?(e.includes('동일 데이터 존재')?'중복의심':'오류'):'검수완료',reason:e.join(', ')}}
-function normalize(a){let x={brand:(a.brand||'').trim(),model:(a.model||'').trim(),series:(a.series||'').trim(),type:(a.type||'').trim(),fuel:(a.fuel||'').trim(),year:String(a.year||'').trim(),trim:(a.trim||'').trim(),price:Number(String(a.price||'').replace(/[₩,원\\s]/g,'')),source:(a.source||'').trim(),date:(a.date||'').trim(),memo:(a.memo||'').trim()};let v=validate(x);return {...x,id:'P'+Date.now()+Math.random().toString(36).slice(2,7),status:v.status,reason:v.reason,selected:true}}
-function parseRows(text){let lines=text.replace(/\\r/g,'').split('\\n').filter(x=>x.trim());if(!lines.length)return[];let delim=lines[0].includes('\\t')?'\\t':(lines[0].includes(',')?',':'\\t');let first=lines[0].split(delim).map(x=>x.trim().replace(/^"|"$/g,''));let known=['제조사','brand','모델명','model','시리즈','series','차체','type','연료','fuel','연식','year','트림','trim','차량가','price','공식출처URL','source','가격기준일','date','메모','memo'];let hasHeader=first.some(x=>known.includes(x));let start=hasHeader?1:0;let map=hasHeader?first.map(h=>({'제조사':'brand','brand':'brand','모델명':'model','model':'model','시리즈':'series','series':'series','차체':'type','type':'type','연료':'fuel','fuel':'fuel','연식':'year','year':'year','트림':'trim','trim':'trim','차량가':'price','price':'price','공식출처URL':'source','source':'source','가격기준일':'date','date':'date','메모':'memo','memo':'memo'}[h]||h)):['brand','model','series','type','fuel','year','trim','price','source','date','memo'];let out=[];for(let i=start;i<lines.length;i++){let vals=lines[i].split(delim).map(x=>x.trim().replace(/^"|"$/g,''));let a={};map.forEach((k,j)=>a[k]=vals[j]||'');if(Object.values(a).some(v=>v!=='') )out.push(normalize(a))}return out}
-function readCSV(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let a=parseRows(r.result);pending.push(...a);persist();alert(a.length+'건을 검수 대기 목록에 넣었습니다.')};r.readAsText(f,'UTF-8');e.target.value=''}
-function pasteOpen(){$('paste').value='';$('modal').classList.add('open')}
-function closeModal(){$('modal').classList.remove('open')}
-function parsePaste(){let a=parseRows($('paste').value);pending.push(...a);persist();closeModal();alert(a.length+'건을 검수 대기 목록에 넣었습니다.')}
-function render(){let q=$('q').value.toLowerCase();let a=pending.filter(x=>JSON.stringify(x).toLowerCase().includes(q));$('rows').innerHTML=a.map(x=>`<tr><td><input type=checkbox class=sel data-id="${x.id}" ${x.selected?'checked':''}></td><td><span class="badge ${x.status==='검수완료'?'ok':x.status==='오류'?'bad':'warn'}">${x.status}</span></td><td>${x.brand}</td><td>${x.model}</td><td>${x.series}</td><td>${x.type}</td><td>${x.fuel}</td><td>${x.year}</td><td>${x.trim}</td><td>${money(x.price)}</td><td>${x.reason||'-'}</td><td><button class=btn onclick="approveOne('${x.id}')">반영</button> <button class="btn danger" onclick="removePending('${x.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan=12 style="text-align:center;padding:28px;color:#667085">검수 대기 데이터가 없습니다.</td></tr>';$('dbrows').innerHTML=db.map(x=>`<tr><td>${x.id}</td><td>${x.brand}</td><td><b>${x.model}</b></td><td>${x.series||''}</td><td>${x.type||''}</td><td>${x.fuel||''}</td><td>${x.year||''}</td><td>${x.trim}</td><td>${money(x.price)}</td><td>${x.source?'<a href="'+x.source+'" target=_blank>출처</a>':'-'}</td><td>${x.date||'-'}</td><td><button class=btn onclick="removeDB('${x.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan=12 style="text-align:center;padding:28px;color:#667085">등록된 DB가 없습니다.</td></tr>'}
-function syncSelected(){document.querySelectorAll('.sel').forEach(c=>{let x=pending.find(a=>a.id===c.dataset.id);if(x)x.selected=c.checked})}
-function toggleAll(c){document.querySelectorAll('.sel').forEach(x=>x.checked=c.checked);syncSelected()}
-function approveOne(id){let x=pending.find(a=>a.id===id);if(!x)return;if(x.status!=='검수완료')return alert('오류 또는 중복의심 데이터는 먼저 수정/확인해야 합니다.');db.push({...x,id:'V'+Date.now()+Math.random().toString(36).slice(2,6)});pending=pending.filter(a=>a.id!==id);persist()}
-function approveSelected(){syncSelected();let a=pending.filter(x=>x.selected&&x.status==='검수완료');if(!a.length)return alert('검수완료 상태의 선택 데이터가 없습니다.');a.forEach(x=>db.push({...x,id:'V'+Date.now()+Math.random().toString(36).slice(2,6)}));let ids=new Set(a.map(x=>x.id));pending=pending.filter(x=>!ids.has(x.id));persist();alert(a.length+'건을 DB에 반영했습니다.')}
-function approveAll(){let a=pending.filter(x=>x.status==='검수완료');if(!a.length)return alert('검수완료 데이터가 없습니다.');a.forEach(x=>db.push({...x,id:'V'+Date.now()+Math.random().toString(36).slice(2,6)}));let ids=new Set(a.map(x=>x.id));pending=pending.filter(x=>!ids.has(x.id));persist();alert(a.length+'건을 반영했습니다.')}
-function removePending(id){pending=pending.filter(x=>x.id!==id);persist()}
-function clearPending(){if(confirm('검수 대기 데이터를 모두 삭제할까요?')){pending=[];persist()}}
-function removeDB(id){if(confirm('등록된 DB를 삭제할까요?')){db=db.filter(x=>x.id!==id);persist()}}
-function clearDB(){if(confirm('등록된 차량 DB를 모두 삭제할까요?')){db=[];persist()}}
-function dl(n,c,t){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click()}
-function csv(a){let h=['id','brand','model','series','type','fuel','year','trim','price','source','date','memo'];return '\\ufeff'+h.join(',')+'\\n'+a.map(r=>h.map(k=>`"${String(r[k]??'').replaceAll('"','""')}"`).join(',')).join('\\n')}
-function exportDB(){dl('rentalon-v7-vehicles.csv',csv(db),'text/csv;charset=utf-8')}
-function downloadTemplate(){let h='제조사,모델명,시리즈,차체,연료,연식,트림,차량가,공식출처URL,가격기준일,메모\\n현대,그랜저,디 올 뉴 그랜저,세단,가솔린,2026,프리미엄,43000000,,2026-09-20,샘플';dl('rentalon-v7-template.csv','\\ufeff'+h,'text/csv;charset=utf-8')}
-function backup(){dl('rentalon-v7-backup.json',JSON.stringify({version:'V7',db,pending},null,2),'application/json')}
-function restore(e){let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);db=x.db||[];pending=x.pending||[];persist();alert('복원 완료')}catch(z){alert('JSON 파일을 확인해주세요')}};r.readAsText(e.target.files[0])}
-function seed(){let a=[['현대','그랜저','디 올 뉴 그랜저','세단','가솔린','2026','프리미엄',43000000],['기아','쏘렌토','쏘렌토','SUV','가솔린','2026','프레스티지',36630000],['제네시스','G80','G80','세단','가솔린','2026','기본',58900000],['BMW','520i','5시리즈','세단','가솔린','2026','기본',76000000],['벤츠','E 200','E-Class','세단','가솔린','2026','Avantgarde',83000000]];let rows=a.map(x=>normalize({brand:x[0],model:x[1],series:x[2],type:x[3],fuel:x[4],year:x[5],trim:x[6],price:x[7]}));pending.push(...rows);persist();alert('샘플 5건을 검수 대기에 넣었습니다.')}
-render();stats();
+const RATEKEY='rentalon_v10_rental_rates';let rates=JSON.parse(localStorage.getItem(RATEKEY)||'[]');
+const demo=[
+{brand:'현대',model:'그랜저',year:'2026',trim:'프리미엄',price:37850000},
+{brand:'현대',model:'싼타페',year:'2026',trim:'익스클루시브',price:39950000},
+{brand:'기아',model:'쏘렌토',year:'2026',trim:'프레스티지',price:39480000},
+{brand:'제네시스',model:'G80',year:'2026',trim:'2.5 터보',price:58900000},
+{brand:'BMW',model:'5시리즈',year:'2026',trim:'520i',price:72100000}
+];
+let vehicles=demo.slice(),sel={brand:'',model:'',trim:''};
+const $=id=>document.getElementById(id),money=n=>Number(n||0).toLocaleString('ko-KR')+'원';
+function unique(a){return [...new Set(a)]}
+function choice(text,sub,active,fn){return `<button class="choice ${active?'active':''}" onclick="${fn}"><b>${text}</b>${sub?`<small>${sub}</small>`:''}</button>`}
+function renderBrands(){let bs=unique(vehicles.map(v=>v.brand));$('brands').innerHTML=bs.map(b=>choice(b,'',sel.brand===b,`setBrand('${b.replace(/'/g,"\\'")}')`)).join('');renderModels()}
+function setBrand(b){sel={brand:b,model:'',trim:''};renderBrands();renderModels();renderTrims();calc()}
+function renderModels(){let ms=unique(vehicles.filter(v=>!sel.brand||v.brand===sel.brand).map(v=>v.model));$('models').innerHTML=ms.length?ms.map(m=>choice(m,'',sel.model===m,`setModel('${m.replace(/'/g,"\\'")}')`)).join(''):'<div class="note">제조사를 먼저 선택하세요.</div>'}
+function setModel(m){sel.model=m;sel.trim='';renderModels();renderTrims();calc()}
+function renderTrims(){let vs=vehicles.filter(v=>(!sel.brand||v.brand===sel.brand)&&(!sel.model||v.model===sel.model));$('trims').innerHTML=vs.length?vs.map(v=>choice(v.trim,`${v.year} · ${money(v.price)}`,sel.trim===v.trim,`setTrim('${v.trim.replace(/'/g,"\\'")}')`)).join(''):'<div class="note">차량을 먼저 선택하세요.</div>'}
+function setTrim(t){sel.trim=t;renderTrims();calc()}
+function current(){return vehicles.find(v=>v.brand===sel.brand&&v.model===sel.model&&v.trim===sel.trim)}
+function calc(){
+ let v=current();if(!v){$('result').innerHTML='<div class="monthly">차량을 선택해주세요</div>';return}
+ let term=$('term').value,mileage=$('mileage').value,initial=$('initial').value,rate=Number($('rate').value||0),opt=Number($('option').value||0),base=Number(v.price)+opt;
+ let companyRows=rates.filter(r=>String(r.term)===term&&String(r.mileage)===mileage&&(!r.brand||r.brand===v.brand)&&(!r.model||r.model===v.model)&&(!r.trim||r.trim===v.trim));
+ if(initial==='none')companyRows=companyRows.filter(r=>r.initial==='none'||Number(r.rate)===0);else companyRows=companyRows.filter(r=>r.initial===initial&&Number(r.rate)===rate);
+ let r=companyRows.sort((a,b)=>String(b.effective).localeCompare(String(a.effective)))[0];
+ if(!r){$('result').innerHTML=`<div class="monthly">요율 확인 필요</div><div class="line"><span>선택 차량</span><b>${v.brand} ${v.model}</b></div><div class="line"><span>트림</span><b>${v.trim}</b></div><div class="note">현재 저장된 렌탈 요율 DB에서 정확히 일치하는 조건을 찾지 못했습니다. 임의의 월 렌탈료를 표시하지 않습니다.</div>`;return}
+ let upfront=base*rate/100;
+ $('result').innerHTML=`<div class="note">${r.company} · ${term}개월 · 연 ${Number(mileage).toLocaleString()}km</div><div class="monthly">${money(r.monthly)}<small style="font-size:14px"> / 월</small></div><div class="line"><span>차량가 + 옵션</span><b>${money(base)}</b></div><div class="line"><span>${initial==='deposit'?'보증금':'선납금'}</span><b>${initial==='none'?'없음':money(upfront)}</b></div><div class="line"><span>보험/정비</span><b>${r.service||'조건 확인'}</b></div><div class="line"><span>요율 적용일</span><b>${r.effective||'-'}</b></div>`;
+}
+['term','mileage','initial','rate','option'].forEach(id=>$(id).addEventListener('input',calc));
+function openModal(){$('modal').classList.add('show');$('leadResult').innerHTML=''}
+function closeModal(){$('modal').classList.remove('show')}
+function submitLead(){let n=$('name').value.trim(),p=$('phone').value.trim();if(!n||!p){alert('이름과 연락처를 입력해주세요.');return}let lead={id:crypto.randomUUID(),date:new Date().toISOString(),name:n,phone:p,memo:$('memo').value,vehicle:sel,term:$('term').value,mileage:$('mileage').value};let ls=JSON.parse(localStorage.getItem('rentalon_leads')||'[]');ls.push(lead);localStorage.setItem('rentalon_leads',JSON.stringify(ls));$('leadResult').innerHTML='<div class="success">상담 신청 내용이 이 브라우저에 저장되었습니다. 실제 영업 접수는 서버/CRM 연결이 필요합니다.</div>'}
+function resetAll(){sel={brand:'',model:'',trim:''};$('term').value='48';$('mileage').value='20000';$('initial').value='none';$('rate').value=0;$('option').value=0;renderBrands();renderModels();renderTrims();calc()}
+renderBrands();renderTrims();calc();
 </script></body></html>
