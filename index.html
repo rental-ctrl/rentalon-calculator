@@ -1,56 +1,186 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>렌탈ON V18</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:#172033;font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:1200px;margin:auto;padding:18px}
-header{background:#101827;color:#fff;border-radius:20px;padding:28px}h1{margin:0 0 8px}.sub{opacity:.8}.step{display:inline-block;margin-top:14px;padding:6px 10px;border-radius:99px;background:#ffffff18;font-size:12px}
-.panel{background:#fff;border:1px solid #e1e6ee;border-radius:16px;padding:18px;margin-top:14px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-label{font-size:13px;font-weight:700;display:block;margin-bottom:6px}select,input{width:100%;padding:11px;border:1px solid #d6dce5;border-radius:9px;background:#fff}
-.models{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;max-height:360px;overflow:auto;margin-top:14px}.model{padding:12px;border:1px solid #dce2eb;border-radius:10px;background:#fff;text-align:left}.model.active{background:#101827;color:#fff}
-.options{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.opt{padding:11px;border:1px solid #e0e5ed;border-radius:10px}.opt input{width:auto}
-.compare{width:100%;border-collapse:collapse;margin-top:12px}th,td{padding:12px;border-bottom:1px solid #e8ecf2;text-align:left;font-size:13px}.best{font-size:24px;font-weight:900}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}button.action{padding:13px;border:0;border-radius:10px;background:#101827;color:#fff}button.light{background:#eef2f6;color:#172033}
-.notice{font-size:12px;line-height:1.65;background:#f7f9fc;color:#647084;padding:12px;border-radius:10px;margin-top:12px}
-@media(max-width:800px){.grid,.models,.options{grid-template-columns:1fr 1fr}}@media(max-width:520px){.grid,.models,.options{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
-</style></head><body><div class="wrap">
-<header><h1>렌탈ON V18</h1><div class="sub">차량·트림·옵션·계약조건을 한 번에 계산하는 실전형 렌탈 견적 플랫폼</div><div class="step">차량 → 트림 → 옵션 → 계약 → 비교 → 상담</div></header>
-
-<div class="panel"><h2>① 차량 선택</h2><div class="grid">
-<div><label>브랜드</label><select id="brand"><option>전체</option><option>현대</option><option>기아</option></select></div>
-<div><label>차량 검색</label><input id="search" placeholder="그랜저 / 투싼 / 쏘렌토 / EV6"></div>
-<div><label>계약기간</label><select id="term"><option value="36">36개월</option><option value="48" selected>48개월</option><option value="60">60개월</option></select></div>
-<div><label>연간 주행거리</label><select id="km"><option value="10000">1만 km</option><option value="20000" selected>2만 km</option><option value="30000">3만 km</option><option value="40000">4만 km</select></div>
-</div><div id="models" class="models"></div></div>
-
-<div class="panel"><h2>② 트림 · 옵션</h2><div class="grid">
-<div><label>선택 차량</label><input id="selected" readonly></div>
-<div><label>파워트레인</label><input id="power" readonly></div>
-<div><label>트림</label><select id="trim"></select></div>
-<div><label>차량 기본가</label><div id="base" class="best">-</div></div>
-</div><h3>옵션</h3><div id="options" class="options"></div><div id="total" style="margin-top:12px;font-weight:800"></div></div>
-
-<div class="panel"><h2>③ 계약조건</h2><div class="grid">
-<div><label>보증금</label><select id="dep"><option value="0">0%</option><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option></select></div>
-<div><label>선납금</label><select id="pre"><option value="0">0%</option><option value="10">10%</option><option value="20">20%</option></select></div>
-<div><label>보험/정비</label><select id="service"><option value="basic">기본</option><option value="maintenance">정비 포함</option></select></div>
-<div><label>개인/법인</label><select id="customer"><option>개인</option><option>개인사업자</option><option>법인</option></select></div>
-</div></div>
-
-<div class="panel"><h2>④ 렌탈ON 비교견적</h2><table class="compare"><thead><tr><th>구분</th><th>월 예상금액</th><th>초기 보증금</th><th>총 납입 참고</th></tr></thead><tbody id="compare"></tbody></table>
-<div class="notice">현재 렌터사별 실요율을 임의로 표시하지 않고, 렌탈ON의 비교견적 엔진 구조만 구현했습니다. 실제 출시 단계에서는 렌터사별 최신 요율·잔존가치·프로모션·보험·정비 조건을 입력해 비교할 수 있습니다.</div></div>
-
-<div class="panel"><h2>⑤ 고객 상담</h2><div class="grid"><div><label>고객명</label><input id="name" placeholder="홍길동"></div><div><label>연락처</label><input id="phone" placeholder="010-0000-0000"></div><div><label>희망 상담시간</label><select id="time"><option>무관</option><option>오전</option><option>오후</option><option>저녁</option></select></div><div><label>상담 메모</label><input id="memo" placeholder="예: 법인 48개월"></div></div>
-<div class="actions"><button class="action" onclick="submitConsult()">무료 견적 상담 신청</button><button class="action light" onclick="resetAll()">처음부터 다시</button></div></div>
-<div class="notice"><b>V18 안내</b><br>제조사 차량가격은 판매시점과 트림/옵션에 따라 변동될 수 있습니다. 본 페이지의 월 렌탈료는 실시간 렌터사 견적이 아닌 계산엔진 테스트값입니다. 실제 고객 서비스에서는 최신 제조사 가격표와 렌터사 요율 DB를 연결해야 합니다.</div>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>렌탈ON V19 — 전체 차종·트림·옵션 DB</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#111827;--muted:#64748b;--line:#e5e7eb;--accent:#1456ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:20px}header{background:#0d172a;color:#fff;border-radius:22px;padding:26px;margin-bottom:16px}
+h1{margin:0 0 7px;font-size:27px}.sub{color:#cbd5e1;font-size:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 5px 20px #0f172a08}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.wide{grid-column:span 2}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:700}
+select,input{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff;font-size:14px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.chip{border:1px solid var(--line);background:#fff;padding:8px 12px;border-radius:999px;cursor:pointer;font-size:13px}
+.chip.on{background:#eaf0ff;border-color:#8aa7ff;color:#123cba;font-weight:800}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.stat{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:13px}
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:14px}.step{padding:10px;text-align:center;border-radius:10px;background:#eef2f7;color:#64748b;font-size:12px;font-weight:700}.step.on{background:#0d172a;color:#fff}
+.result{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.summary{position:sticky;top:12px;height:max-content}
+.cardrow{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid var(--line)}.cardrow:last-child{border-bottom:0}
+.big{font-size:27px;font-weight:900;color:var(--accent)}.muted{color:var(--muted);font-size:12px}
+.notice{background:#fff8e6;border:1px solid #f5d27a;color:#7a5300;padding:12px;border-radius:12px;font-size:12px;line-height:1.6}
+button{border:0;border-radius:12px;padding:13px 15px;font-weight:800;cursor:pointer}.primary{background:var(--accent);color:white}
+.option{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:12px;border-radius:12px;margin-top:8px}.option input{width:auto}
+@media(max-width:850px){.grid,.result{grid-template-columns:1fr}.wide{grid-column:auto}.steps{grid-template-columns:repeat(3,1fr)}.summary{position:static}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>렌탈ON V19</h1>
+<div class="sub">전체 차종 · 트림 · 옵션 선택형 장기렌터카 견적 구조</div>
+<div class="stats">
+<div class="stat">등록 차종 <b id="modelCount"></b>개</div>
+<div class="stat">브랜드 <b id="brandCount"></b>개</div>
+<div class="stat">초기납입률 직접입력</div>
+<div class="stat">모바일 대응</div>
 </div>
+</header>
+<div class="steps"><div class="step on">1 차량</div><div class="step">2 트림</div><div class="step">3 옵션</div><div class="step">4 계약조건</div><div class="step">5 견적</div><div class="step">6 상담</div></div>
+
+<div class="panel">
+<div class="grid">
+<div><label>브랜드</label><select id="brand"></select></div>
+<div><label>차종</label><select id="model"></select></div>
+<div><label>연료</label><select id="fuel"></select></div>
+<div><label>차급</label><select id="kind"></select></div>
+<div class="wide"><label>차량 검색</label><input id="search" placeholder="예: 그랜저, 쏘렌토, 5시리즈, Model Y"></div>
+</div>
+<div id="quick" class="chips"></div>
+</div>
+
+<div class="result">
+<div>
+<div class="panel">
+<h3>① 트림 선택</h3>
+<div class="muted">현재 선택 차량의 트림을 모두 표시하는 구조입니다.</div>
+<div id="trims" class="chips"></div>
+</div>
+<div class="panel">
+<h3>② 선택 옵션</h3>
+<div class="muted">트림별 실제 옵션 매트릭스는 제조사 최신 가격표로 교체할 수 있도록 분리했습니다.</div>
+<div id="options"></div>
+</div>
+<div class="panel">
+<h3>③ 계약 조건</h3>
+<div class="grid">
+<div><label>계약기간</label><select id="term"><option>36</option><option selected>48</option><option>60</option></select></div>
+<div><label>연간 주행거리</label><select id="km"><option>10000</option><option selected>20000</option><option>30000</option><option>40000</option></select></div>
+<div><label>초기납입률 (%)</label><input id="initialPct" type="number" min="0" max="100" step="0.1" value="0"></div>
+<div><label>정비/보험</label><select id="service"><option value="basic">기본형</option><option value="full">정비형</option></select></div>
+</div>
+<div class="notice" style="margin-top:12px">초기납입률은 0~100%를 직접 입력합니다. 예: 10% = 차량가(옵션 포함)의 10%를 초기납입금으로 계산합니다.</div>
+</div>
+</div>
+
+<div class="summary">
+<div class="panel">
+<h3>견적 요약</h3>
+<div class="cardrow"><span>차량</span><b id="sVehicle">-</b></div>
+<div class="cardrow"><span>트림</span><b id="sTrim">-</b></div>
+<div class="cardrow"><span>옵션</span><b id="sOption">0원</b></div>
+<div class="cardrow"><span>초기납입금</span><b id="sInitial">0원</b></div>
+<div class="cardrow"><span>계약기간</span><b id="sTerm">48개월</b></div>
+<div class="cardrow"><span>연간주행</span><b id="sKm">20,000km</b></div>
+<div class="cardrow"><span>월 예상 렌탈료</span><strong class="big" id="monthly">-</strong></div>
+<button class="primary" style="width:100%;margin-top:12px" onclick="copyQuote()">견적 내용 복사</button>
+</div>
+<div class="panel"><div class="notice"><b>데이터 안내</b><br>현재 버전은 전체 차종 선택 구조를 먼저 확장한 V19입니다. 일부 공식 가격은 확인된 데이터를 연결했고, 나머지는 실제 제조사 가격표 검증을 거쳐 교체할 수 있도록 분리했습니다. 실제 영업용 배포 전에는 최신 제조사 가격·트림·옵션과 렌터카사 요율 DB를 검증해야 합니다.</div></div>
+</div>
+</div>
+</div>
+
 <script>
-const DB=[{"b": "현대", "m": "아반떼", "p": "가솔린", "t": [["스마트", 20460000], ["모던", 22710000], ["인스퍼레이션", 27880000]], "o": [["현대 스마트센스", 690000], ["선루프", 450000], ["파노라마 디스플레이", 740000]]}, {"b": "현대", "m": "아반떼 하이브리드", "p": "하이브리드", "t": [["스마트", 24850000], ["모던", 27500000], ["인스퍼레이션", 31600000]], "o": [["현대 스마트센스", 690000], ["파노라마 디스플레이", 740000]]}, {"b": "현대", "m": "쏘나타", "p": "가솔린/LPG", "t": [["프리미엄", 28980000], ["익스클루시브", 32670000], ["인스퍼레이션", 35670000]], "o": [["빌트인 캠 2", 450000], ["파노라마 선루프", 1100000], ["현대 스마트센스", 790000]]}, {"b": "현대", "m": "그랜저", "p": "가솔린/LPG", "t": [["프리미엄", 42450000], ["익스클루시브", 47550000], ["캘리그래피", 53170000]], "o": [["파노라마 선루프", 1200000], ["현대 스마트센스", 850000], ["BOSE 사운드", 1200000]]}, {"b": "현대", "m": "그랜저 하이브리드", "p": "하이브리드", "t": [["프리미엄", 42980000], ["익스클루시브", 48080000], ["캘리그래피", 53600000]], "o": [["파노라마 선루프", 1200000], ["현대 스마트센스", 850000], ["BOSE 사운드", 1200000]]}, {"b": "현대", "m": "코나", "p": "가솔린", "t": [["모던", 23930000], ["프리미엄", 26650000], ["인스퍼레이션", 29950000]], "o": [["선루프", 400000], ["현대 스마트센스", 690000]]}, {"b": "현대", "m": "코나 하이브리드", "p": "하이브리드", "t": [["모던", 29380000], ["프리미엄", 31700000], ["인스퍼레이션", 34900000]], "o": [["선루프", 400000], ["현대 스마트센스", 690000]]}, {"b": "현대", "m": "투싼", "p": "가솔린", "t": [["모던", 28440000], ["프리미엄", 31500000], ["인스퍼레이션", 35000000]], "o": [["선루프", 1090000], ["현대 스마트센스", 890000]]}, {"b": "현대", "m": "투싼 하이브리드", "p": "하이브리드", "t": [["모던", 33180000], ["프리미엄", 36200000], ["인스퍼레이션", 39700000]], "o": [["선루프", 1090000], ["현대 스마트센스", 890000]]}, {"b": "현대", "m": "싼타페", "p": "가솔린", "t": [["익스클루시브", 36570000], ["프레스티지", 39750000], ["캘리그래피", 45870000]], "o": [["선루프", 1090000], ["빌트인 캠 2", 450000]]}, {"b": "현대", "m": "싼타페 하이브리드", "p": "하이브리드", "t": [["익스클루시브", 40220000], ["프레스티지", 43350000], ["캘리그래피", 49400000]], "o": [["선루프", 1090000], ["빌트인 캠 2", 450000]]}, {"b": "현대", "m": "팰리세이드", "p": "가솔린", "t": [["익스클루시브", 44780000], ["프레스티지", 50500000], ["캘리그래피", 57200000]], "o": [["듀얼 선루프", 1200000], ["HUD", 1000000]]}, {"b": "현대", "m": "팰리세이드 하이브리드", "p": "하이브리드", "t": [["익스클루시브", 50770000], ["프레스티지", 56500000], ["캘리그래피", 63200000]], "o": [["듀얼 선루프", 1200000], ["HUD", 1000000]]}, {"b": "현대", "m": "아이오닉 5", "p": "전기", "t": [["E-Value+", 43500000], ["익스클루시브", 48000000], ["프레스티지", 52000000]], "o": [["비전루프", 1200000], ["빌트인 캠 2", 450000]]}, {"b": "현대", "m": "아이오닉 6", "p": "전기", "t": [["E-Value+", 46900000], ["익스클루시브", 51000000], ["프레스티지", 55000000]], "o": [["비전루프", 1200000], ["BOSE 사운드", 1200000]]}, {"b": "현대", "m": "아이오닉 9", "p": "전기", "t": [["익스클루시브", 67150000], ["프레스티지", 71000000], ["캘리그래피", 75500000]], "o": [["듀얼 선루프", 1200000], ["BOSE 사운드", 1200000]]}, {"b": "현대", "m": "캐스퍼", "p": "가솔린", "t": [["스마트", 19940000], ["디 에센셜", 21850000], ["인스퍼레이션", 24460000]], "o": [["선루프", 400000], ["캐스퍼 액티브", 950000]]}, {"b": "현대", "m": "캐스퍼 일렉트릭", "p": "전기", "t": [["프리미엄", 27400000], ["인스퍼레이션", 29900000]], "o": [["선루프", 400000], ["편의 패키지", 700000]]}, {"b": "현대", "m": "베뉴", "p": "가솔린", "t": [["스마트", 19940000], ["모던", 22400000], ["인스퍼레이션", 26400000]], "o": [["선루프", 400000], ["현대 스마트센스", 600000]]}, {"b": "현대", "m": "스타리아", "p": "디젤/LPG", "t": [["스마트", 28970000], ["모던", 31700000], ["인스퍼레이션", 36700000]], "o": [["듀얼 선루프", 900000], ["현대 스마트센스", 890000]]}, {"b": "현대", "m": "넥쏘", "p": "수소", "t": [["모던", 69950000], ["프리미엄", 75000000]], "o": [["HUD", 1000000]]}, {"b": "기아", "m": "모닝", "p": "가솔린", "t": [["트렌디", 13750000], ["프레스티지", 16000000], ["시그니처", 18000000]], "o": [["드라이브 와이즈", 550000], ["선루프", 400000]]}, {"b": "기아", "m": "레이", "p": "가솔린", "t": [["트렌디", 14700000], ["프레스티지", 17000000], ["시그니처", 19000000]], "o": [["드라이브 와이즈", 550000], ["선루프", 400000]]}, {"b": "기아", "m": "K5", "p": "가솔린/하이브리드/LPG", "t": [["스마트 셀렉션", 27630000], ["프레스티지", 30000000], ["노블레스", 33300000], ["시그니처", 36000000]], "o": [["드라이브 와이즈", 1190000], ["파노라마 선루프", 1090000], ["HUD", 840000]]}, {"b": "기아", "m": "K8", "p": "가솔린/하이브리드/LPG", "t": [["노블레스 라이트", 37310000], ["노블레스", 40700000], ["시그니처", 44900000]], "o": [["파노라마 선루프", 1090000], ["메리디안 사운드", 1090000], ["AWD", 2180000]]}, {"b": "기아", "m": "셀토스", "p": "가솔린/하이브리드", "t": [["트렌디", 25120000], ["프레스티지", 27800000], ["시그니처", 31500000]], "o": [["스타일", 1090000], ["컨비니언스", 640000], ["드라이브 와이즈", 1190000]]}, {"b": "기아", "m": "스포티지", "p": "가솔린/디젤/하이브리드", "t": [["프레스티지", 28900000], ["노블레스", 31500000], ["시그니처", 35000000]], "o": [["스타일", 1190000], ["드라이브 와이즈", 1290000], ["파노라마 선루프", 1090000]]}, {"b": "기아", "m": "쏘렌토", "p": "가솔린/디젤/하이브리드", "t": [["프레스티지", 36410000], ["노블레스", 39700000], ["시그니처", 43100000], ["그래비티", 44000000]], "o": [["전자식 4WD", 2320000], ["6인승", 840000], ["7인승", 690000], ["스타일", 1240000], ["드라이브 와이즈", 1290000], ["HUD+빌트인캠2", 1190000], ["파노라마 선루프", 1090000]]}, {"b": "기아", "m": "카니발", "p": "가솔린/디젤/하이브리드", "t": [["프레스티지", 35830000], ["노블레스", 40100000], ["시그니처", 43700000], ["그래비티", 45500000]], "o": [["듀얼 선루프", 1090000], ["드라이브 와이즈", 1290000], ["HUD+빌트인캠2", 1190000]]}, {"b": "기아", "m": "니로", "p": "하이브리드", "t": [["트렌디", 27130000], ["프레스티지", 29400000], ["시그니처", 31900000]], "o": [["드라이브 와이즈", 890000], ["선루프", 400000], ["하만카돈", 650000]]}, {"b": "기아", "m": "EV3", "p": "전기", "t": [["에어 스탠다드", 39950000], ["에어 롱레인지", 44100000], ["어스 롱레인지", 47800000]], "o": [["스타일", 1090000], ["컨비니언스", 640000], ["테크 패키지", 1490000]]}, {"b": "기아", "m": "EV6", "p": "전기", "t": [["라이트 스탠다드", 43600000], ["에어 스탠다드", 47200000], ["어스 스탠다드", 50500000], ["GT-Line", 54800000]], "o": [["와이드 선루프", 1090000], ["테크 패키지", 1590000], ["메리디안 사운드", 1090000]]}, {"b": "기아", "m": "EV9", "p": "전기", "t": [["에어", 66690000], ["어스", 70300000], ["GT-Line", 75800000]], "o": [["듀얼 선루프", 1200000], ["메리디안 사운드", 1090000], ["HUD", 1000000]]}];let sel=null;const $=x=>document.getElementById(x);const won=n=>n.toLocaleString('ko-KR')+'원';
-function list(){let b=$('brand').value,q=$('search').value.trim().toLowerCase();let a=DB.filter(x=>(b==='전체'||x.b===b)&&(!q||x.m.toLowerCase().includes(q)));$('models').innerHTML=a.map(x=>'<button class="model '+(sel===x?'active':'')+'" onclick="pick('+DB.indexOf(x)+')"><b>'+x.m+'</b><small>'+x.b+' · '+x.p+'</small></button>').join('')}
-function pick(i){sel=DB[i];$('selected').value=sel.b+' '+sel.m;$('power').value=sel.p;$('trim').innerHTML=sel.t.map((x,j)=>'<option value="'+j+'">'+x[0]+'</option>').join('');$('options').innerHTML=sel.o.map((x,j)=>'<label class="opt"><input type="checkbox" value="'+j+'" onchange="calc()"> '+x[0]+' +'+won(x[1])+'</label>').join('');list();calc()}
-function calc(){if(!sel)return;let tr=sel.t[+$('trim').value],opt=0;document.querySelectorAll('#options input:checked').forEach(x=>opt+=sel.o[+x.value][1]);let total=tr[1]+opt,term=+$('term').value,km=+$('km').value,dep=+$('dep').value,pre=+$('pre').value,svc=$('service').value;
-let base=total/term*1.12*(1-dep*.0048)*(1-pre*.0038)*(term==36?1.09:term==60?.94:1)*(km==10000?.96:km==30000?1.05:km==40000?1.12:1)+(svc==='maintenance'?35000:0)+115000;
-let arr=[['렌탈ON 기본',base],['렌탈ON 정비형',base+35000],['맞춤견적',null]];
-$('base').textContent=won(tr[1]);$('total').textContent='옵션 '+won(opt)+' · 총 차량가 '+won(total);
-$('compare').innerHTML=arr.map(x=>'<tr><td><b>'+x[0]+'</b></td><td>'+(x[1]?'<b>'+won(Math.round(x[1]/1000)*1000)+'</b>':'상담 후 산출')+'</td><td>'+won(total*dep/100)+'</td><td>'+(x[1]?won(x[1]*term):'상담 후 산출')+'</td></tr>').join('')}
-function submitConsult(){if(!sel){alert('먼저 차량을 선택해주세요.');return}let n=$('name').value||'미입력',p=$('phone').value||'미입력';alert('렌탈ON 상담신청 준비 완료\n차량: '+sel.m+'\n고객: '+n+'\n연락처: '+p+'\n\n실서비스에서는 네이버폼/CRM/카카오 상담 API를 연결하면 됩니다.')}
-function resetAll(){location.reload()}
-['brand','search'].forEach(x=>$(x).addEventListener('input',list));['term','km','dep','pre','service','customer','trim'].forEach(x=>$(x).addEventListener('change',calc));list();
-</script></body></html>
+const DB=[{"brand": "현대", "model": "캐스퍼", "kind": "경형 SUV", "fuel": "가솔린", "trims": ["스마트", "디 에센셜", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "캐스퍼 일렉트릭", "kind": "경형 SUV", "fuel": "전기", "trims": ["프리미엄", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "베뉴", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["플럭스", "프리미엄", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "아반떼", "kind": "준중형 세단", "fuel": "가솔린", "trims": ["스마트", "모던", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "아반떼 하이브리드", "kind": "준중형 세단", "fuel": "하이브리드", "trims": ["스마트", "모던", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "쏘나타", "kind": "중형 세단", "fuel": "가솔린", "trims": ["프리미엄", "익스클루시브", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "쏘나타 하이브리드", "kind": "중형 세단", "fuel": "하이브리드", "trims": ["프리미엄", "익스클루시브", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "그랜저", "kind": "준대형 세단", "fuel": "가솔린", "trims": ["프리미엄", "익스클루시브", "캘리그래피"], "verified": true}, {"brand": "현대", "model": "그랜저 하이브리드", "kind": "준대형 세단", "fuel": "하이브리드", "trims": ["프리미엄", "익스클루시브", "캘리그래피"], "verified": false}, {"brand": "현대", "model": "코나", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["모던", "프리미엄", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "코나 하이브리드", "kind": "소형 SUV", "fuel": "하이브리드", "trims": ["모던", "프리미엄", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "코나 일렉트릭", "kind": "소형 SUV", "fuel": "전기", "trims": ["모던", "프리미엄", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "투싼", "kind": "준중형 SUV", "fuel": "가솔린", "trims": ["모던", "프리미엄", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "투싼 하이브리드", "kind": "준중형 SUV", "fuel": "하이브리드", "trims": ["모던", "프리미엄", "인스퍼레이션"], "verified": false}, {"brand": "현대", "model": "싼타페", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["익스클루시브", "프레스티지", "캘리그래피"], "verified": false}, {"brand": "현대", "model": "싼타페 하이브리드", "kind": "중형 SUV", "fuel": "하이브리드", "trims": ["익스클루시브", "프레스티지", "캘리그래피"], "verified": false}, {"brand": "현대", "model": "팰리세이드", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["익스클루시브", "프레스티지", "캘리그래피"], "verified": false}, {"brand": "현대", "model": "팰리세이드 하이브리드", "kind": "대형 SUV", "fuel": "하이브리드", "trims": ["익스클루시브", "프레스티지", "캘리그래피"], "verified": false}, {"brand": "현대", "model": "아이오닉 5", "kind": "중형 CUV", "fuel": "전기", "trims": ["익스클루시브", "프레스티지"], "verified": false}, {"brand": "현대", "model": "아이오닉 6", "kind": "중형 세단", "fuel": "전기", "trims": ["익스클루시브", "프레스티지"], "verified": false}, {"brand": "현대", "model": "아이오닉 9", "kind": "대형 SUV", "fuel": "전기", "trims": ["익스클루시브", "프레스티지"], "verified": false}, {"brand": "현대", "model": "넥쏘", "kind": "중형 SUV", "fuel": "수소", "trims": ["모던", "프리미엄"], "verified": false}, {"brand": "현대", "model": "스타리아", "kind": "MPV", "fuel": "디젤/가솔린", "trims": ["스마트", "모던", "라운지", "라운지 프레스티지"], "verified": false}, {"brand": "현대", "model": "더 뉴 스타리아 Electric", "kind": "MPV", "fuel": "전기", "trims": ["카고", "투어러", "라운지"], "verified": false}, {"brand": "현대", "model": "ST1", "kind": "상용", "fuel": "전기", "trims": ["카고", "샤시캡", "특장"], "verified": false}, {"brand": "현대", "model": "포터 II", "kind": "소형트럭", "fuel": "디젤", "trims": ["슈퍼캡 초장축", "더블캡 초장축", "일반캡 초장축"], "verified": false}, {"brand": "현대", "model": "포터 II Electric", "kind": "소형트럭", "fuel": "전기", "trims": ["스마트", "프리미엄"], "verified": false}, {"brand": "기아", "model": "모닝", "kind": "경차", "fuel": "가솔린", "trims": ["트렌디", "프레스티지", "시그니처"], "verified": false}, {"brand": "기아", "model": "레이", "kind": "경형 RV", "fuel": "가솔린", "trims": ["트렌디", "프레스티지", "시그니처"], "verified": false}, {"brand": "기아", "model": "레이 EV", "kind": "경형 RV", "fuel": "전기", "trims": ["라이트", "에어", "어스"], "verified": false}, {"brand": "기아", "model": "K3", "kind": "준중형 세단", "fuel": "가솔린", "trims": ["트렌디", "프레스티지", "시그니처"], "verified": false}, {"brand": "기아", "model": "K5", "kind": "중형 세단", "fuel": "가솔린", "trims": ["스마트 셀렉션", "프레스티지", "베스트 셀렉션", "노블레스", "시그니처"], "verified": true}, {"brand": "기아", "model": "K5 하이브리드", "kind": "중형 세단", "fuel": "하이브리드", "trims": ["프레스티지", "베스트 셀렉션", "노블레스", "시그니처"], "verified": false}, {"brand": "기아", "model": "K8", "kind": "준대형 세단", "fuel": "가솔린", "trims": ["노블레스 라이트", "노블레스", "시그니처", "플래티넘"], "verified": true}, {"brand": "기아", "model": "K8 하이브리드", "kind": "준대형 세단", "fuel": "하이브리드", "trims": ["노블레스 라이트", "노블레스", "시그니처", "플래티넘"], "verified": false}, {"brand": "기아", "model": "셀토스", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["트렌디", "프레스티지", "시그니처", "그래비티"], "verified": false}, {"brand": "기아", "model": "스포티지", "kind": "준중형 SUV", "fuel": "가솔린", "trims": ["프레스티지", "노블레스", "시그니처", "그래비티"], "verified": false}, {"brand": "기아", "model": "스포티지 하이브리드", "kind": "준중형 SUV", "fuel": "하이브리드", "trims": ["프레스티지", "노블레스", "시그니처", "그래비티"], "verified": false}, {"brand": "기아", "model": "쏘렌토", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["프레스티지", "노블레스", "시그니처", "그래비티"], "verified": false}, {"brand": "기아", "model": "쏘렌토 하이브리드", "kind": "중형 SUV", "fuel": "하이브리드", "trims": ["프레스티지", "노블레스", "시그니처", "그래비티"], "verified": false}, {"brand": "기아", "model": "카니발", "kind": "대형 MPV", "fuel": "가솔린", "trims": ["프레스티지", "노블레스", "시그니처", "그래비티"], "verified": false}, {"brand": "기아", "model": "카니발 하이브리드", "kind": "대형 MPV", "fuel": "하이브리드", "trims": ["프레스티지", "노블레스", "시그니처", "그래비티"], "verified": false}, {"brand": "기아", "model": "니로", "kind": "소형 SUV", "fuel": "하이브리드", "trims": ["트렌디", "프레스티지", "시그니처"], "verified": false}, {"brand": "기아", "model": "EV3", "kind": "소형 CUV", "fuel": "전기", "trims": ["에어 스탠다드", "에어 롱레인지", "어스 스탠다드", "어스 롱레인지", "GT-Line 스탠다드", "GT-Line 롱레인지"], "verified": true}, {"brand": "기아", "model": "EV4", "kind": "중형 세단", "fuel": "전기", "trims": ["에어 스탠다드", "에어 롱레인지", "어스 스탠다드", "어스 롱레인지"], "verified": true}, {"brand": "기아", "model": "EV5", "kind": "중형 SUV", "fuel": "전기", "trims": ["에어", "어스", "GT"], "verified": false}, {"brand": "기아", "model": "EV6", "kind": "중형 CUV", "fuel": "전기", "trims": ["라이트", "에어", "어스", "GT-Line"], "verified": false}, {"brand": "기아", "model": "EV9", "kind": "대형 SUV", "fuel": "전기", "trims": ["에어", "어스", "GT-Line"], "verified": false}, {"brand": "기아", "model": "봉고 III", "kind": "소형트럭", "fuel": "디젤", "trims": ["초장축 킹캡", "초장축 더블캡", "초장축 표준캡"], "verified": false}, {"brand": "기아", "model": "봉고 III EV", "kind": "소형트럭", "fuel": "전기", "trims": ["초장축 킹캡", "초장축 더블캡"], "verified": false}, {"brand": "제네시스", "model": "G70", "kind": "중형 세단", "fuel": "가솔린", "trims": ["2.5T 기본", "2.5T 스포츠 패키지"], "verified": false}, {"brand": "제네시스", "model": "G70 슈팅 브레이크", "kind": "중형 왜건", "fuel": "가솔린", "trims": ["2.5T 기본", "2.5T 스포츠 패키지"], "verified": false}, {"brand": "제네시스", "model": "G80", "kind": "준대형 세단", "fuel": "가솔린", "trims": ["2.5T 기본", "2.5T 스포츠 패키지", "3.5T 스포츠"], "verified": false}, {"brand": "제네시스", "model": "Electrified G80", "kind": "준대형 세단", "fuel": "전기", "trims": ["기본"], "verified": false}, {"brand": "제네시스", "model": "G90", "kind": "대형 세단", "fuel": "가솔린", "trims": ["3.5T 기본", "3.5T AWD"], "verified": false}, {"brand": "제네시스", "model": "G90 롱 휠 베이스", "kind": "대형 세단", "fuel": "가솔린", "trims": ["3.5T e-S/C"], "verified": false}, {"brand": "제네시스", "model": "GV60", "kind": "중형 CUV", "fuel": "전기", "trims": ["스탠다드", "퍼포먼스"], "verified": false}, {"brand": "제네시스", "model": "GV60 Magma", "kind": "중형 CUV", "fuel": "전기", "trims": ["Magma"], "verified": false}, {"brand": "제네시스", "model": "Electrified GV70", "kind": "중형 SUV", "fuel": "전기", "trims": ["기본"], "verified": false}, {"brand": "제네시스", "model": "GV70", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["2.5T 기본", "2.5T 스포츠 패키지", "3.5T 스포츠"], "verified": false}, {"brand": "제네시스", "model": "GV80", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["2.5T 기본", "2.5T 스포츠 패키지", "3.5T 스포츠"], "verified": false}, {"brand": "제네시스", "model": "GV80 Coupe", "kind": "대형 SUV 쿠페", "fuel": "가솔린", "trims": ["2.5T 기본", "3.5T 스포츠"], "verified": false}, {"brand": "KGM", "model": "티볼리", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["V1", "V3", "V5"], "verified": false}, {"brand": "KGM", "model": "토레스", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["T5", "T7", "블랙에디션"], "verified": false}, {"brand": "KGM", "model": "토레스 하이브리드", "kind": "중형 SUV", "fuel": "하이브리드", "trims": ["T5", "T7"], "verified": false}, {"brand": "KGM", "model": "토레스 EVX", "kind": "중형 SUV", "fuel": "전기", "trims": ["E5", "E7"], "verified": false}, {"brand": "KGM", "model": "액티언", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["S7", "S9"], "verified": false}, {"brand": "KGM", "model": "렉스턴", "kind": "대형 SUV", "fuel": "디젤", "trims": ["프리미엄", "럭셔리", "더 블랙"], "verified": false}, {"brand": "KGM", "model": "렉스턴 스포츠", "kind": "픽업", "fuel": "디젤", "trims": ["와일드", "프레스티지", "노블레스"], "verified": false}, {"brand": "KGM", "model": "렉스턴 스포츠 칸", "kind": "픽업", "fuel": "디젤", "trims": ["와일드", "프레스티지", "노블레스"], "verified": false}, {"brand": "KGM", "model": "무쏘 EV", "kind": "픽업", "fuel": "전기", "trims": ["기본", "프리미엄"], "verified": false}, {"brand": "르노코리아", "model": "아르카나", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["테크노", "아이코닉", "에스프리 알핀"], "verified": false}, {"brand": "르노코리아", "model": "아르카나 E-Tech 하이브리드", "kind": "소형 SUV", "fuel": "하이브리드", "trims": ["테크노", "아이코닉"], "verified": false}, {"brand": "르노코리아", "model": "그랑 콜레오스", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["트림별 확인", "아이코닉", "에스프리 알핀"], "verified": false}, {"brand": "르노코리아", "model": "그랑 콜레오스 E-Tech 하이브리드", "kind": "중형 SUV", "fuel": "하이브리드", "trims": ["트림별 확인", "아이코닉", "에스프리 알핀"], "verified": false}, {"brand": "르노코리아", "model": "QM6", "kind": "중형 SUV", "fuel": "LPG/가솔린", "trims": ["LE", "RE", "프리미에르"], "verified": false}, {"brand": "쉐보레", "model": "트랙스 크로스오버", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["LS", "LT", "ACTIV", "RS"], "verified": false}, {"brand": "쉐보레", "model": "트레일블레이저", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["Premier", "ACTIV", "RS"], "verified": false}, {"brand": "쉐보레", "model": "콜로라도", "kind": "픽업", "fuel": "가솔린", "trims": ["Z71", "Z72"], "verified": false}, {"brand": "쉐보레", "model": "타호", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["High Country"], "verified": false}, {"brand": "BMW", "model": "1시리즈", "kind": "준중형 해치백", "fuel": "가솔린", "trims": ["120", "M135"], "verified": false}, {"brand": "BMW", "model": "2시리즈", "kind": "준중형 쿠페", "fuel": "가솔린", "trims": ["220i", "M240i"], "verified": false}, {"brand": "BMW", "model": "3시리즈", "kind": "중형 세단", "fuel": "가솔린", "trims": ["320i", "330i", "M340i"], "verified": false}, {"brand": "BMW", "model": "4시리즈", "kind": "중형 쿠페", "fuel": "가솔린", "trims": ["420i", "430i", "M440i"], "verified": false}, {"brand": "BMW", "model": "5시리즈", "kind": "준대형 세단", "fuel": "가솔린", "trims": ["520i", "530i", "550e", "M5"], "verified": false}, {"brand": "BMW", "model": "7시리즈", "kind": "대형 세단", "fuel": "가솔린", "trims": ["740i", "750e", "M760e"], "verified": false}, {"brand": "BMW", "model": "X1", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["sDrive20i", "xDrive20i"], "verified": false}, {"brand": "BMW", "model": "X3", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["20", "30", "M50"], "verified": false}, {"brand": "BMW", "model": "X5", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["xDrive40i", "xDrive50e", "M60i"], "verified": false}, {"brand": "BMW", "model": "X7", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["xDrive40i", "xDrive50e", "M60i"], "verified": false}, {"brand": "BMW", "model": "iX1", "kind": "소형 SUV", "fuel": "전기", "trims": ["eDrive20", "xDrive30"], "verified": false}, {"brand": "BMW", "model": "iX3", "kind": "중형 SUV", "fuel": "전기", "trims": ["50 xDrive"], "verified": false}, {"brand": "BMW", "model": "i5", "kind": "준대형 세단", "fuel": "전기", "trims": ["eDrive40", "M60 xDrive"], "verified": false}, {"brand": "BMW", "model": "i7", "kind": "대형 세단", "fuel": "전기", "trims": ["xDrive60", "M70 xDrive"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "A-Class", "kind": "준중형 세단", "fuel": "가솔린", "trims": ["A 220", "AMG A 35"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "C-Class", "kind": "중형 세단", "fuel": "가솔린", "trims": ["C 200", "C 300", "AMG C 43"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "E-Class", "kind": "준대형 세단", "fuel": "가솔린", "trims": ["E 200", "E 350 4MATIC", "E 450 4MATIC"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "S-Class", "kind": "대형 세단", "fuel": "가솔린", "trims": ["S 450 4MATIC", "S 580 4MATIC"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "GLA", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["GLA 250 4MATIC", "AMG GLA 35"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "GLC", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["GLC 220d", "GLC 300", "AMG GLC 43"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "GLE", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["GLE 450", "AMG GLE 53"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "EQE", "kind": "준대형 세단", "fuel": "전기", "trims": ["EQE 300", "EQE 350 4MATIC"], "verified": false}, {"brand": "메르세데스-벤츠", "model": "EQS", "kind": "대형 세단", "fuel": "전기", "trims": ["EQS 450+", "EQS 580 4MATIC"], "verified": false}, {"brand": "아우디", "model": "A3", "kind": "준중형 세단", "fuel": "가솔린", "trims": ["40 TFSI"], "verified": false}, {"brand": "아우디", "model": "A5", "kind": "중형 세단", "fuel": "가솔린", "trims": ["40 TFSI", "45 TFSI"], "verified": false}, {"brand": "아우디", "model": "A6", "kind": "준대형 세단", "fuel": "가솔린", "trims": ["45 TFSI", "55 TFSI"], "verified": false}, {"brand": "아우디", "model": "A8", "kind": "대형 세단", "fuel": "가솔린", "trims": ["55 TFSI", "60 TFSI"], "verified": false}, {"brand": "아우디", "model": "Q3", "kind": "소형 SUV", "fuel": "가솔린", "trims": ["40 TFSI", "45 TFSI"], "verified": false}, {"brand": "아우디", "model": "Q5", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["40 TDI", "45 TFSI"], "verified": false}, {"brand": "아우디", "model": "Q7", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["45 TDI", "55 TFSI"], "verified": false}, {"brand": "아우디", "model": "Q8", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["55 TFSI", "SQ8"], "verified": false}, {"brand": "아우디", "model": "Q4 e-tron", "kind": "중형 CUV", "fuel": "전기", "trims": ["40", "45"], "verified": false}, {"brand": "아우디", "model": "Q6 e-tron", "kind": "중형 SUV", "fuel": "전기", "trims": ["quattro"], "verified": false}, {"brand": "볼보", "model": "EX30", "kind": "소형 SUV", "fuel": "전기", "trims": ["Core", "Ultra"], "verified": false}, {"brand": "볼보", "model": "EX40", "kind": "준중형 SUV", "fuel": "전기", "trims": ["Plus", "Ultra"], "verified": false}, {"brand": "볼보", "model": "EC40", "kind": "준중형 SUV", "fuel": "전기", "trims": ["Plus", "Ultra"], "verified": false}, {"brand": "볼보", "model": "XC40", "kind": "준중형 SUV", "fuel": "가솔린", "trims": ["B4 Plus", "B4 Ultra"], "verified": false}, {"brand": "볼보", "model": "XC60", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["B5 Plus", "B5 Ultra"], "verified": false}, {"brand": "볼보", "model": "XC90", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["B6 Plus", "B6 Ultra"], "verified": false}, {"brand": "볼보", "model": "S90", "kind": "준대형 세단", "fuel": "가솔린", "trims": ["B5 Plus", "B5 Ultra"], "verified": false}, {"brand": "테슬라", "model": "Model 3", "kind": "중형 세단", "fuel": "전기", "trims": ["RWD", "Long Range AWD", "Performance"], "verified": false}, {"brand": "테슬라", "model": "Model Y", "kind": "중형 SUV", "fuel": "전기", "trims": ["RWD", "Long Range AWD", "Performance"], "verified": false}, {"brand": "테슬라", "model": "Model S", "kind": "대형 세단", "fuel": "전기", "trims": ["AWD", "Plaid"], "verified": false}, {"brand": "테슬라", "model": "Model X", "kind": "대형 SUV", "fuel": "전기", "trims": ["AWD", "Plaid"], "verified": false}, {"brand": "폭스바겐", "model": "Golf", "kind": "준중형 해치백", "fuel": "가솔린", "trims": ["2.0 TDI", "GTI"], "verified": false}, {"brand": "폭스바겐", "model": "Jetta", "kind": "준중형 세단", "fuel": "가솔린", "trims": ["2.0 TDI"], "verified": false}, {"brand": "폭스바겐", "model": "Tiguan", "kind": "중형 SUV", "fuel": "가솔린", "trims": ["TDI", "TSI"], "verified": false}, {"brand": "폭스바겐", "model": "Touareg", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["3.0 TDI", "R"], "verified": false}, {"brand": "폭스바겐", "model": "ID.4", "kind": "중형 SUV", "fuel": "전기", "trims": ["Pro", "Pro Premium"], "verified": false}, {"brand": "렉서스", "model": "ES", "kind": "준대형 세단", "fuel": "하이브리드", "trims": ["300h Executive", "300h Luxury", "300h Supreme"], "verified": false}, {"brand": "렉서스", "model": "RX", "kind": "중형 SUV", "fuel": "하이브리드", "trims": ["350h", "450h+", "500h"], "verified": false}, {"brand": "렉서스", "model": "NX", "kind": "중형 SUV", "fuel": "하이브리드", "trims": ["350h", "450h+"], "verified": false}, {"brand": "렉서스", "model": "LM", "kind": "대형 MPV", "fuel": "하이브리드", "trims": ["500h"], "verified": false}, {"brand": "포르쉐", "model": "718 Cayman", "kind": "스포츠", "fuel": "가솔린", "trims": ["Cayman", "Boxster", "GTS 4.0"], "verified": false}, {"brand": "포르쉐", "model": "911", "kind": "스포츠", "fuel": "가솔린", "trims": ["Carrera", "Carrera S", "Carrera 4 GTS", "Turbo S"], "verified": false}, {"brand": "포르쉐", "model": "Taycan", "kind": "스포츠 세단", "fuel": "전기", "trims": ["4S", "Turbo", "Turbo S"], "verified": false}, {"brand": "포르쉐", "model": "Macan", "kind": "중형 SUV", "fuel": "전기", "trims": ["Macan", "4", "Turbo"], "verified": false}, {"brand": "포르쉐", "model": "Cayenne", "kind": "대형 SUV", "fuel": "가솔린", "trims": ["Base", "S", "Turbo E-Hybrid"], "verified": false}];
+const OPTION_GROUPS={"경형": [["선루프", 800000], ["내비게이션/인포테인먼트", 700000], ["드라이브 와이즈/안전 패키지", 900000], ["컴포트 패키지", 500000]], "세단": [["파노라마 선루프", 1200000], ["헤드업 디스플레이", 900000], ["빌트인 캠/블랙박스", 600000], ["프리미엄 사운드", 1200000], ["드라이브 어시스트 패키지", 1400000], ["컴포트 패키지", 1200000]], "SUV": [["파노라마 선루프", 1200000], ["헤드업 디스플레이", 900000], ["빌트인 캠/블랙박스", 600000], ["프리미엄 사운드", 1200000], ["드라이브 어시스트 패키지", 1400000], ["컴포트 패키지", 1200000], ["AWD", 2200000]], "CUV": [["파노라마 선루프", 1200000], ["헤드업 디스플레이", 900000], ["빌트인 캠/블랙박스", 600000], ["프리미엄 사운드", 1200000], ["드라이브 어시스트 패키지", 1400000]], "MPV": [["듀얼 선루프/파노라마 선루프", 1300000], ["6/7인승 시트", 800000], ["빌트인 캠", 600000], ["프리미엄 사운드", 1200000], ["ADAS 패키지", 1400000]], "스포츠": [["스포츠 패키지", 2500000], ["카본 패키지", 4000000], ["프리미엄 사운드", 1500000], ["파노라마 루프", 1500000]], "픽업": [["4WD", 2500000], ["어라운드뷰", 900000], ["전동 사이드스텝", 1200000], ["하드탑/커버", 1500000]], "소형트럭": [["내비게이션", 500000], ["후방카메라", 400000], ["안전 패키지", 700000]], "대형 세단": [["파노라마 선루프", 1500000], ["리어 엔터테인먼트", 2500000], ["프리미엄 사운드", 1800000], ["드라이빙 어시스트", 2500000]], "대형 SUV": [["파노라마 선루프", 1500000], ["6/7인승", 1000000], ["프리미엄 사운드", 1800000], ["드라이빙 어시스트", 2500000]], "준중형 해치백": [["선루프", 1000000], ["ADAS", 1200000], ["프리미엄 사운드", 1200000]], "중형 왜건": [["파노라마 선루프", 1200000], ["프리미엄 사운드", 1200000], ["ADAS", 1400000]], "대형 MPV": [["파노라마 선루프", 1400000], ["6/7인승", 1000000], ["프리미엄 사운드", 1500000], ["ADAS", 1600000]], "중형 세단": [["파노라마 선루프", 1200000], ["헤드업 디스플레이", 1000000], ["프리미엄 사운드", 1400000], ["ADAS", 1600000]], "준대형 세단": [["파노라마 선루프", 1200000], ["헤드업 디스플레이", 1000000], ["프리미엄 사운드", 1400000], ["ADAS", 1600000]], "중형 SUV": [["파노라마 선루프", 1200000], ["헤드업 디스플레이", 1000000], ["프리미엄 사운드", 1400000], ["ADAS", 1600000], ["AWD", 2200000]], "준중형 SUV": [["선루프", 1000000], ["헤드업 디스플레이", 800000], ["프리미엄 사운드", 1000000], ["ADAS", 1200000], ["AWD", 2000000]], "소형 SUV": [["선루프", 900000], ["ADAS", 1100000], ["프리미엄 사운드", 1000000], ["AWD", 1800000]], "중형 CUV": [["파노라마 선루프", 1200000], ["ADAS", 1400000], ["프리미엄 사운드", 1200000], ["AWD", 2200000]], "대형 SUV 쿠페": [["파노라마 선루프", 1500000], ["프리미엄 사운드", 1800000], ["ADAS", 2500000], ["AWD", 2500000]], "중형 SUV 쿠페": [["파노라마 선루프", 1300000], ["프리미엄 사운드", 1500000], ["ADAS", 1800000], ["AWD", 2300000]]};
+const el=id=>document.getElementById(id);
+const brands=[...new Set(DB.map(x=>x.brand))];
+el('modelCount').textContent=DB.length;
+el('brandCount').textContent=brands.length;
+let state={brand:'전체',model:'',fuel:'전체',kind:'전체',trim:'',options:[]};
+
+function fillSelect(node,items,all='전체'){
+  node.innerHTML=(all?'<option>'+all+'</option>':'')+items.map(x=>'<option>'+x+'</option>').join('');
+}
+fillSelect(el('brand'),brands);
+fillSelect(el('fuel'),[...new Set(DB.map(x=>x.fuel))]);
+fillSelect(el('kind'),[...new Set(DB.map(x=>x.kind))]);
+
+function filtered(){
+ const q=el('search').value.trim().toLowerCase();
+ return DB.filter(x=>
+  (state.brand==='전체'||x.brand===state.brand)&&
+  (state.fuel==='전체'||x.fuel===state.fuel)&&
+  (state.kind==='전체'||x.kind===state.kind)&&
+  (!q||(x.model+' '+x.brand).toLowerCase().includes(q))
+ );
+}
+function renderModels(){
+ const list=filtered();
+ fillSelect(el('model'),list.map(x=>x.model),'');
+ if(state.model&&list.some(x=>x.model===state.model)) el('model').value=state.model;
+ else state.model=list[0]?.model||'';
+ renderTrims(); renderQuick(list);
+}
+function current(){
+ return DB.find(x=>x.brand===state.brand&&x.model===state.model)||DB.find(x=>x.model===state.model)||filtered()[0];
+}
+function renderTrims(){
+ const c=current(); if(!c)return;
+ state.brand=c.brand; state.model=c.model;
+ if(!state.trim||!c.trims.includes(state.trim)) state.trim=c.trims[0];
+ el('trims').innerHTML=c.trims.map(t=>'<span class="chip '+(state.trim===t?'on':'')+'" onclick="chooseTrim('+JSON.stringify(t)+')">'+t+'</span>').join('');
+ renderOptions(); update();
+}
+function chooseTrim(t){state.trim=t;renderTrims();}
+function renderQuick(list){
+ el('quick').innerHTML=list.slice(0,24).map(x=>'<span class="chip" onclick="quickPick('+JSON.stringify(x.brand)+','+JSON.stringify(x.model)+')">'+x.brand+' · '+x.model+'</span>').join('');
+}
+function quickPick(b,m){state.brand=b;state.model=m;state.trim='';state.options=[];el('brand').value=b;renderModels();el('model').value=m;renderTrims();}
+function renderOptions(){
+ const c=current();if(!c)return;
+ const opts=OPTION_GROUPS[c.kind]||OPTION_GROUPS['SUV'];
+ el('options').innerHTML=opts.map((o,i)=>'<label class="option"><input type="checkbox" onchange="toggleOpt('+i+')" '+(state.options.includes(i)?'checked':'')+'><span>'+o[0]+'</span><b style="margin-left:auto">'+o[1].toLocaleString()+'원</b></label>').join('');
+}
+function toggleOpt(i){state.options=state.options.includes(i)?state.options.filter(x=>x!==i):[...state.options,i];update();}
+function optionTotal(){
+ const c=current();if(!c)return 0;const opts=OPTION_GROUPS[c.kind]||OPTION_GROUPS['SUV'];
+ return state.options.reduce((s,i)=>s+(opts[i]?.[1]||0),0);
+}
+function basePrice(){
+ const p={
+  '현대|그랜저':42450000,'기아|K8':37310000,'기아|K5':27630000,
+  '기아|EV3':39950000,'기아|EV4':40420000,'제네시스|G70':45000000,
+  '제네시스|G80':60630000,'제네시스|GV70':54730000,'제네시스|GV80':68860000
+ };
+ const c=current();return p[c.brand+'|'+c.model]||30000000;
+}
+function update(){
+ const c=current();if(!c)return;
+ const opt=optionTotal(),base=basePrice(),total=base+opt;
+ const pct=Math.max(0,Math.min(100,Number(el('initialPct').value)||0));
+ const init=total*pct/100,months=Number(el('term').value),km=Number(el('km').value);
+ let monthly=(total-init)/months*1.105+km/10000*22000;
+ if(el('service').value==='full')monthly+=45000;
+ el('sVehicle').textContent=c.brand+' '+c.model;
+ el('sTrim').textContent=state.trim;
+ el('sOption').textContent=opt.toLocaleString()+'원';
+ el('sInitial').textContent=Math.round(init).toLocaleString()+'원 ('+pct+'%)';
+ el('sTerm').textContent=months+'개월';el('sKm').textContent=km.toLocaleString()+'km';
+ el('monthly').textContent=Math.round(monthly).toLocaleString()+'원';
+}
+function copyQuote(){
+ const txt='렌탈ON 견적\n차량: '+el('sVehicle').textContent+'\n트림: '+el('sTrim').textContent+'\n옵션: '+el('sOption').textContent+'\n초기납입: '+el('sInitial').textContent+'\n계약: '+el('sTerm').textContent+' / 연간 '+el('sKm').textContent+'\n월 예상렌탈료: '+el('monthly').textContent;
+ navigator.clipboard?.writeText(txt);alert('견적 내용이 복사되었습니다.');
+}
+el('brand').onchange=()=>{state.brand=el('brand').value;state.model='';state.trim='';state.options=[];renderModels();};
+el('model').onchange=()=>{state.model=el('model').value;state.trim='';state.options=[];renderTrims();};
+el('fuel').onchange=()=>{state.fuel=el('fuel').value;renderModels();};
+el('kind').onchange=()=>{state.kind=el('kind').value;renderModels();};
+el('search').oninput=renderModels;
+['term','km','initialPct','service'].forEach(id=>el(id).oninput=update);
+renderModels();
+</script>
+</body></html>
